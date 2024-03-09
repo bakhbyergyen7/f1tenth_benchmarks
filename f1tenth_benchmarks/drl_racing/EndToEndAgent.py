@@ -11,6 +11,8 @@ def create_train_agent(state_dim, algorithm):
         agent = TrainTD3(state_dim, action_dim)
     elif algorithm == "SAC":
         agent = TrainSAC(state_dim, action_dim)
+    elif algorithm == "TinyTD3":
+        agent = TrainTinyTD3(state_dim, action_dim)
     else: raise ValueError(f"Algorithm {algorithm} not recognised")
     
     return agent
@@ -132,8 +134,4 @@ class TrainEndToEndAgent(EndToEndAgent):
 
         np.save(self.data_root_path + "RewardHistory.npy", self.reward_history)
         self.agent.save(self.name, self.data_root_path)
-
-
-
-
 

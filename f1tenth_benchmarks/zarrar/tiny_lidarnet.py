@@ -38,7 +38,7 @@ class TinyLidarNet(BasePlanner):
 
         steer = output[0,0]
         speed = output[0,1]
-        speed = self.linear_map(speed, 0, 1, -2, 11)
+        speed = self.linear_map(speed, 0, 1, 3.5, 8)
         action = np.array([steer, speed])
 
         return action
