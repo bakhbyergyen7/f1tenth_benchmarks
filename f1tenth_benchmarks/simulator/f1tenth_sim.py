@@ -10,8 +10,24 @@ import pandas as pd
 import os, datetime
 import cProfile, io, pstats
 
+import time
+# gl
+import pyglet
+pyglet.options['debug_gl'] = False
+from pyglet import gl
+
+# constants
+
+# rendering
+VIDEO_W = 600
+VIDEO_H = 400
+WINDOW_W = 1000
+WINDOW_H = 800
 
 class F1TenthSimBase:
+    renderer = None
+    render_callbacks = []
+
     def __init__(self, map_name, planner_name, test_id, save_detail_history=True, training=False, extra_params={}):
         self.params = load_parameter_file_with_extras("simulator_params", extra_params)
         self.random_start_rng = np.random.default_rng(self.params.random_seed)

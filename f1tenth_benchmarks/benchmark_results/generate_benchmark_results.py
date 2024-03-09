@@ -3,6 +3,7 @@ from f1tenth_benchmarks.classic_racing.GlobalPurePursuit import GlobalPurePursui
 from f1tenth_benchmarks.classic_racing.GlobalMPCC import GlobalMPCC
 from f1tenth_benchmarks.mapless_racing.FollowTheGap import FollowTheGap
 from f1tenth_benchmarks.drl_racing.EndToEndAgent import EndToEndAgent, TrainEndToEndAgent
+from f1tenth_benchmarks.zarrar.tiny_lidarnet import TinyLidarNet
 
 from f1tenth_benchmarks.data_tools.specific_plotting.plot_drl_training import plot_drl_training
 from f1tenth_benchmarks.data_tools.plot_trajectory_analysis import plot_trajectory_analysis
@@ -12,7 +13,7 @@ NUMBER_OF_LAPS = 10
 
 
 def generate_racelines():
-    map_list = ["aut", "esp", "gbr", "mco"]
+    map_list = ['example', 'MoscowRaceway']
     params = load_parameter_file_with_extras("RaceTrackGenerator", extra_params={"mu": 0.9})
     raceline_id = f"mu{int(params.mu*100)}"
     for map_name in map_list:
@@ -55,15 +56,21 @@ def end_to_end_drl():
     testing_agent = EndToEndAgent(test_id)
     test_mapless_all_maps(testing_agent, test_id, number_of_laps=10)
 
+def tinylidar():
+    test_id = "benchmark_tinylidar"
+    planner = TinyLidarNet(test_id)
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
+    plot_trajectory_analysis('tinylidar', test_id)
 
 
 if __name__ == "__main__":
     # generate_racelines()
-    # optimisation_and_tracking()
+    optimisation_and_tracking()
     mpcc()
-    # follow_the_gap()
+    follow_the_gap()
     # end_to_end_drl()
+    # tinylidar()
 
 
 

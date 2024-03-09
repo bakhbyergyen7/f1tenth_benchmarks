@@ -381,19 +381,19 @@ class ScanSimulator2D(object):
         self.set_map(map_name)
     
     def set_map(self, map_name):
-        map_path = "maps/" + map_name + ".yaml"
+        map_path = "/home/b126y998/f1tenth_benchmarks/maps/" + map_name + ".yaml"
         
         with open(map_path, 'r') as yaml_stream:
             try:
                 map_metadata = yaml.safe_load(yaml_stream)
                 self.map_resolution = map_metadata['resolution']
                 self.origin = map_metadata['origin']
-                map_img_path = "maps/" + map_metadata['image']
+                map_img_path = "/home/b126y998/f1tenth_benchmarks/maps/" + map_metadata['image']
             except yaml.YAMLError as ex:
                 print(ex)
 
         # load map image
-        self.map_img = np.array(Image.open(map_img_path).transpose(Image.FLIP_TOP_BOTTOM))
+        self.map_img = np.array(Image.open(map_img_path).convert('L').transpose(Image.FLIP_TOP_BOTTOM))
         self.map_img = self.map_img.astype(np.float64)
 
         # grayscale -> binary

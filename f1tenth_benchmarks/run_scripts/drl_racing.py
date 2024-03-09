@@ -20,7 +20,7 @@ def train_and_test_agents():
     train_map = "mco"
     test_id = "SACv1"
 
-    training_agent = TrainEndToEndAgent(train_map, test_id, extra_params={'reward': "progress"})
+    training_agent = TrainEndToEndAgent(train_map, test_id, extra_params={'reward': "Progress"})
     simulate_training_steps(training_agent, train_map, test_id)
     plot_drl_training(training_agent.name, test_id)
 

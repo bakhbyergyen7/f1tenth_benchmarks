@@ -11,10 +11,13 @@ import csv
 
 from copy import copy
 from f1tenth_benchmarks.data_tools.plotting_utils import *
-
+import os
 
 np.printoptions(precision=3, suppress=True)
 
+def ensure_path_exists(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 class RaceTrackGenerator(RaceTrack):
     def __init__(self, map_name, raceline_id, params, load_mincurve=False, plot_raceline=True) -> None:
@@ -25,13 +28,13 @@ class RaceTrackGenerator(RaceTrack):
         except:
             smooth_centre_lines()
             self.centre_line = CentreLine(map_name, "Data/smooth_centre_lines/")
-        ensure_path_exists(f"Data/racelines/")
-        ensure_path_exists(f"Data/min_curve_lines/")
-        ensure_path_exists(f"Data/raceline_data/")
+        # ensure_path_exists(f"Data/racelines/")
+        # ensure_path_exists(f"Data/min_curve_lines/")
+        # ensure_path_exists(f"Data/raceline_data/")
         self.raceline_path = f"Data/racelines/{raceline_id}/"
-        ensure_path_exists(self.raceline_path)
+        # ensure_path_exists(self.raceline_path)
         self.raceline_data_path = f"Data/raceline_data/{raceline_id}/"
-        ensure_path_exists(self.raceline_data_path)
+        # ensure_path_exists(self.raceline_data_path)
 
         self.params = params
         save_params(params, self.raceline_data_path)
@@ -140,10 +143,10 @@ class Track:
 def generate_racelines():
     params = load_parameter_file("RaceTrackGenerator")
     # params.mu = 0.5
-    params.mu = 0.95
+    params.mu = 0.9
     # raceline_id = f"_drl_training"
     raceline_id = f"mu{int(params.mu*100)}"
-    map_list = ['aut', 'esp', 'gbr', 'mco']
+    map_list = ['aut', 'esp', 'gbr', 'mco', 'MoscowRaceway']
     # map_list = ['mco']
     # map_list = ['aut']
     for map_name in map_list: 
@@ -157,14 +160,14 @@ def generate_raceline_set():
     for friction in friction_vals:
         params.mu = friction
         raceline_id = f"mu{int(params.mu*100)}"
-        map_list = ['aut', 'esp', 'gbr', 'mco']
+        map_list = ['mco', 'MoscowRaceway', 'example']
         for map_name in map_list: 
-            RaceTrackGenerator(map_name, raceline_id, params, load_mincurve=True)
+            RaceTrackGenerator(map_name, raceline_id, params, load_mincurve=False, plot_raceline=True)
             # RaceTrackPlotter(map_name, raceline_id)
 
 
 if __name__ == "__main__":
-    # generate_racelines()
-    generate_raceline_set()
+    generate_racelines()
+    #generate_raceline_set()
 
 

@@ -15,7 +15,7 @@ class MapData:
         self.map_width = None
 
         try:
-            self.path = "maps/"
+            self.path = "/home/b126y998/f1tenth_benchmarks/maps/"
             self.load_map_img()
         except:
             self.path = "../maps/"

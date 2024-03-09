@@ -43,13 +43,13 @@ def ensure_path_exists(folder):
 
 
 def load_parameter_file(planner_name):
-    file_name = f"params/{planner_name}.yaml"
+    file_name = f"/home/b126y998/f1tenth_benchmarks/params/{planner_name}.yaml"
     with open(file_name, 'r') as file:
         params = yaml.load(file, Loader=yaml.FullLoader)
     return Namespace(**params)
 
 def load_parameter_file_with_extras(planner_name, extra_params):
-    file_name = f"params/{planner_name}.yaml"
+    file_name = f"/home/b126y998/f1tenth_benchmarks/params/{planner_name}.yaml"
     with open(file_name, 'r') as file:
         params = yaml.load(file, Loader=yaml.FullLoader)
     for param in extra_params.keys():
@@ -59,6 +59,6 @@ def load_parameter_file_with_extras(planner_name, extra_params):
 
 
 def save_params(params, folder, name="params"):
-    file_name = f"{folder}/{name}.yaml"
-    with open(file_name, 'w') as file:
+    file_name = f"{folder}{name}.yaml"
+    with open(file_name, 'w+') as file:
         yaml.dump(params, file)
