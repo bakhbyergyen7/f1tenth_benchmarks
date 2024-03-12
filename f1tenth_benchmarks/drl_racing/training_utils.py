@@ -62,65 +62,116 @@ class OffPolicyBuffer(object):
     def size(self):
         return self.ptr
     
+
 class TinyPolicyBuffer(object):
-    def __init__(self, actor_dim, critic_dim, action_dim):     
-        self.ptr = 0
-        self.actor_dim = actor_dim
-        self.critic_dim = critic_dim
+    def __init__(self, state_dim, action_dim, memory_size=10000):
+        self.state_dim = state_dim
         self.action_dim = action_dim
+        self.ptr = 0
+        self.memory_size = memory_size
 
-        self.actor_states = np.empty((MEMORY_SIZE, actor_dim))
-        self.critic_states = np.empty((MEMORY_SIZE, critic_dim))
-        self.actions = np.empty((MEMORY_SIZE, action_dim))
-        self.next_actor_states = np.empty((MEMORY_SIZE, actor_dim))
-        self.next_critic_states = np.empty((MEMORY_SIZE, critic_dim))
-        self.rewards = np.empty((MEMORY_SIZE, 1))
-        self.dones = np.empty((MEMORY_SIZE, 1))
+        self.states = np.empty((memory_size, *state_dim))
+        self.actions = np.empty((memory_size, action_dim))
+        self.next_states = np.empty((memory_size, *state_dim))
+        self.rewards = np.empty((memory_size, 1))
+        self.dones = np.empty((memory_size, 1))
 
-    def add(self, actor_state, critic_state, action, next_actor_state, next_critic_state, reward, done):
-        self.actor_states[self.ptr] = actor_state
-        self.critic_states[self.ptr] = critic_state
+    def add(self, state, action, next_state, reward, done):
+        self.states[self.ptr] = state
         self.actions[self.ptr] = action
-        self.next_actor_states[self.ptr] = next_actor_state
-        self.next_critic_states[self.ptr] = next_critic_state
+        self.next_states[self.ptr] = next_state
         self.rewards[self.ptr] = reward
         self.dones[self.ptr] = done
 
         self.ptr += 1
         
-        if self.ptr == MEMORY_SIZE: self.ptr = 0
+        if self.ptr == self.memory_size:
+            self.ptr = 0
 
     def sample(self, batch_size):
         ind = np.random.randint(0, self.ptr-1, size=batch_size)
-        actor_states = np.empty((batch_size, self.actor_dim))
-        critic_states = np.empty((batch_size, self.critic_dim))
+        states = np.empty((batch_size, *self.state_dim))
         actions = np.empty((batch_size, self.action_dim))
-        next_actor_states = np.empty((batch_size, self.actor_dim))
-        next_critic_states = np.empty((batch_size, self.critic_dim))
+        next_states = np.empty((batch_size, *self.state_dim))
         rewards = np.empty((batch_size, 1))
         dones = np.empty((batch_size, 1))
 
         for i, j in enumerate(ind): 
-            actor_states[i] = self.actor_states[j]
-            critic_states[i] = self.critic_states[j]
+            states[i] = self.states[j]
             actions[i] = self.actions[j]
-            next_actor_states[i] = self.next_actor_states[j]
-            next_critic_states[i] = self.next_critic_states[j]
+            next_states[i] = self.next_states[j]
             rewards[i] = self.rewards[j]
             dones[i] = self.dones[j]
             
-        actor_states = torch.FloatTensor(actor_states).unsqueeze(1)
-        critic_states = torch.FloatTensor(critic_states).unsqueeze(1)
+        states = torch.FloatTensor(states)
         actions = torch.FloatTensor(actions)
-        next_actor_states = torch.FloatTensor(next_actor_states)
-        next_critic_states = torch.FloatTensor(next_critic_states)
+        next_states = torch.FloatTensor(next_states)
         rewards = torch.FloatTensor(rewards)
-        dones = torch.FloatTensor(1- dones)
+        dones = torch.FloatTensor(1 - dones)
 
-        return actor_states, critic_states, actions, next_actor_states, next_critic_states, rewards, dones
+        return states, actions, next_states, rewards, dones
 
     def size(self):
         return self.ptr
+# class TinyPolicyBuffer(object):
+#     def __init__(self, actor_dim, critic_dim, action_dim):     
+#         self.ptr = 0
+#         self.actor_dim = actor_dim
+#         self.critic_dim = critic_dim
+#         self.action_dim = action_dim
+
+#         self.actor_states = np.empty((MEMORY_SIZE, actor_dim))
+#         self.critic_states = np.empty((MEMORY_SIZE, critic_dim))
+#         self.actions = np.empty((MEMORY_SIZE, action_dim))
+#         self.next_actor_states = np.empty((MEMORY_SIZE, actor_dim))
+#         self.next_critic_states = np.empty((MEMORY_SIZE, critic_dim))
+#         self.rewards = np.empty((MEMORY_SIZE, 1))
+#         self.dones = np.empty((MEMORY_SIZE, 1))
+
+#     def add(self, actor_state, critic_state, action, next_actor_state, next_critic_state, reward, done):
+#         self.actor_states[self.ptr] = actor_state
+#         self.critic_states[self.ptr] = critic_state
+#         self.actions[self.ptr] = action
+#         self.next_actor_states[self.ptr] = next_actor_state
+#         self.next_critic_states[self.ptr] = next_critic_state
+#         self.rewards[self.ptr] = reward
+#         self.dones[self.ptr] = done
+
+#         self.ptr += 1
+        
+#         if self.ptr == MEMORY_SIZE: self.ptr = 0
+
+#     def sample(self, batch_size):
+#         ind = np.random.randint(0, self.ptr-1, size=batch_size)
+#         actor_states = np.empty((batch_size, self.actor_dim))
+#         critic_states = np.empty((batch_size, self.critic_dim))
+#         actions = np.empty((batch_size, self.action_dim))
+#         next_actor_states = np.empty((batch_size, self.actor_dim))
+#         next_critic_states = np.empty((batch_size, self.critic_dim))
+#         rewards = np.empty((batch_size, 1))
+#         dones = np.empty((batch_size, 1))
+
+#         for i, j in enumerate(ind): 
+#             actor_states[i] = self.actor_states[j]
+#             critic_states[i] = self.critic_states[j]
+#             actions[i] = self.actions[j]
+#             next_actor_states[i] = self.next_actor_states[j]
+#             next_critic_states[i] = self.next_critic_states[j]
+#             rewards[i] = self.rewards[j]
+#             dones[i] = self.dones[j]
+            
+#         actor_states = torch.FloatTensor(actor_states).unsqueeze(1)
+#         critic_states = torch.FloatTensor(critic_states).unsqueeze(1)
+#         actions = torch.FloatTensor(actions)
+#         next_actor_states = torch.FloatTensor(next_actor_states)
+#         next_critic_states = torch.FloatTensor(next_critic_states)
+#         rewards = torch.FloatTensor(rewards)
+#         dones = torch.FloatTensor(1- dones)
+
+#         return actor_states, critic_states, actions, next_actor_states, next_critic_states, rewards, dones
+
+#     def size(self):
+#         return self.ptr
    
 
 class DoublePolicyNet(nn.Module):
@@ -146,18 +197,19 @@ class SharedCNN(nn.Module):
     def __init__(self):
         super(SharedCNN, self).__init__()
         self.conv1 = nn.Conv1d(in_channels=1, out_channels=24, kernel_size=10, stride=4)
-        self.conv2 = nn.Conv1d(in_channels=24, out_channels=36, kernel_size=8, stride=4)
-        self.conv3 = nn.Conv1d(in_channels=36, out_channels=48, kernel_size=4, stride=2)
-        self.conv4 = nn.Conv1d(in_channels=48, out_channels=64, kernel_size=3, stride=1)
-        self.conv5 = nn.Conv1d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
+        # self.conv2 = nn.Conv1d(in_channels=24, out_channels=36, kernel_size=8, stride=4)
+        # self.conv3 = nn.Conv1d(in_channels=36, out_channels=48, kernel_size=4, stride=2)
+        # self.conv4 = nn.Conv1d(in_channels=48, out_channels=64, kernel_size=3, stride=1)
+        self.conv5 = nn.Conv1d(in_channels=24, out_channels=24, kernel_size=8, stride=4)
 
     def forward(self, x):
-        x = x.unsqueeze(1)
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        x = F.relu(self.conv4(x))
-        x = F.relu(self.conv5(x))
+        if len(x.shape) == 2:  # If input is 2D, add a batch dimension
+            x = x.unsqueeze(1)
+        # x = F.relu(self.conv1(x))
+        # x = F.relu(self.conv2(x))
+        # x = F.relu(self.conv3(x))
+        # x = F.relu(self.conv4(x))
+        # x = F.relu(self.conv5(x))
         x = torch.flatten(x, 1)  # Flatten for fully connected layers
         return x
 
@@ -170,10 +222,10 @@ class TinyPolicyNet(nn.Module):
         # self.conv4 = nn.Conv1d(in_channels=48, out_channels=64, kernel_size=3, stride=1)
         # self.conv5 = nn.Conv1d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
         self.shared_cnn = shared_cnn
-        self.fc1 = nn.Linear(128, 100)
+        self.fc1 = nn.Linear(41, 100)
         self.fc2 = nn.Linear(100, 50)
-        self.fc3 = nn.Linear(50, 10)
-        self.fc_mu = nn.Linear(10, 2)
+        # self.fc3 = nn.Linear(50, 10)
+        self.fc_mu = nn.Linear(50, act_dim)
 
     def forward(self, x):
         # x = x.unsqueeze(1)
@@ -183,10 +235,10 @@ class TinyPolicyNet(nn.Module):
         # x = F.relu(self.conv4(x))
         # x = F.relu(self.conv5(x))
         # x = torch.flatten(x, 1)
-        x = self.shared_cnn(x)
+        # x = self.shared_cnn(x)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
+        # x = F.relu(self.fc3(x))
         x = F.tanh(self.fc_mu(x))
         
         return x
@@ -206,10 +258,10 @@ class TinyCriticNet(nn.Module):
         # self.conv4 = nn.Conv1d(in_channels=48, out_channels=64, kernel_size=3, stride=1)
         # self.conv5 = nn.Conv1d(in_channels=64, out_channels=64, kernel_size=3, stride=1)
         self.shared_cnn = shared_cnn
-        self.fc1 = nn.Linear(128+act_dim, 100)
+        self.fc1 = nn.Linear(41+act_dim, 100)
         self.fc2 = nn.Linear(100, 50)
-        self.fc3 = nn.Linear(50, 10)
-        self.fc_mu = nn.Linear(10, 2)
+        # self.fc3 = nn.Linear(50, 10)
+        self.fc_mu = nn.Linear(50, act_dim)
 
     def forward(self, x, action):
         # x = x.unsqueeze(1)
@@ -219,11 +271,12 @@ class TinyCriticNet(nn.Module):
         # x = F.relu(self.conv4(x))
         # x = F.relu(self.conv5(x))
         # x = torch.flatten(x, 1)
-        x = self.shared_cnn(x)
-        x = torch.cat((x, action), dim=1)
+        # x = self.shared_cnn(x)
+        print(x.shape, action.shape)
+        x = torch.cat([x, action], dim=1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
+        # x = F.relu(self.fc3(x))
         x = self.fc_mu(x)
         
         return x
@@ -273,6 +326,7 @@ class DoubleQNet(nn.Module):
         self.fc_out = nn.Linear(NN_LAYER_2, 1)
 
     def forward(self, state, action):
+        
         x = torch.cat([state, action], 1)
         x2 = F.relu(self.fc1(x))
         x3 = F.relu(self.fc2(x2))

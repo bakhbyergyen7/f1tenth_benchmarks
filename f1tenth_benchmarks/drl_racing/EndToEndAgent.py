@@ -141,11 +141,12 @@ class TinyAgent(BasePlanner):
         self.range_finder_scale = 10
 
         self.skip_n = int(np.ceil(1081 / self.planner_params.number_of_beams))
-        self.state_space = self.planner_params.number_of_beams
+        self.state_space = self.planner_params.number_of_beams *2 + 1 
+        self.scan_buffer = np.zeros((self.planner_params.n_scans, self.planner_params.number_of_beams))
         self.actor = torch.load(self.data_root_path + f'{self.name}_actor.pth')
         
     def plan(self, obs):
-        nn_state = self.transform_actor(obs)
+        nn_state = self.transform_obs(obs)
         
         if obs['vehicle_speed'] < 1:
             return np.array([0, 2])
@@ -153,7 +154,7 @@ class TinyAgent(BasePlanner):
         self.nn_act = self.actor.test_action(nn_state)
         self.action = self.transform_action(self.nn_act)
         
-        return self.action
+        return self.action 
     
     def transform_obs(self, obs):
         """
@@ -168,7 +169,17 @@ class TinyAgent(BasePlanner):
         speed = obs['vehicle_speed'] / self.planner_params.max_speed
         scan = np.clip(obs['scan'][::self.skip_n] /self.planner_params.range_finder_scale, 0, 1)
 
-        return scan
+        if self.scan_buffer.all() ==0: # first reading
+            for i in range(self.scan_buffer.shape[0]):
+                self.scan_buffer[i, :] = scan 
+        else:
+            self.scan_buffer = np.roll(self.scan_buffer, 1, axis=0)
+            self.scan_buffer[0, :] = scan
+
+        dual_scan = np.reshape(self.scan_buffer, (-1))
+        nn_obs = np.concatenate((dual_scan, [speed]))
+
+        return nn_obs
 
     def transform_action(self, nn_action):
         steering_angle = nn_action[0] * self.vehicle_params.max_steer
@@ -191,7 +202,8 @@ class TrainTinyAgent(TinyAgent):
         self.action = None
 
         self.skip_n = int(np.ceil(1081 / self.planner_params.number_of_beams))
-        self.state_space = self.planner_params.number_of_beams
+        self.state_space = (1, self.planner_params.number_of_beams *2 + 1)
+        self.scan_buffer = np.zeros((self.planner_params.n_scans, self.planner_params.number_of_beams))
 
         self.agent = create_train_agent(self.state_space, self.planner_params.algorithm)
         self.current_ep_reward = 0

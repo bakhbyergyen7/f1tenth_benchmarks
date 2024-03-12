@@ -5,11 +5,12 @@ from f1tenth_benchmarks.utils.BasePlanner import BasePlanner
 import tensorflow as tf
 
 class TinyLidarNet(BasePlanner):
-    def __init__(self, test_id, skip_n):
+    def __init__(self, test_id, skip_n, model_path):
         super().__init__("TinyLidarNet", test_id)
         self.skip_n = skip_n
+        self.model_path = model_path
         self.name = 'TinyLidarNet'
-        self.interpreter = tf.lite.Interpreter(model_path='/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_smaller_noquantized.tflite')
+        self.interpreter = tf.lite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.output_details = self.interpreter.get_output_details()

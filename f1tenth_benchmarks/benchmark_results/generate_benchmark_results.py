@@ -78,21 +78,21 @@ def end_to_end_il():
 
 def tinylidar_il():
     test_id = "benchmark_tiny_il"
-    planner = TinyLidarNet(test_id,4)
+    planner = TinyLidarNet(test_id,4,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_smaller_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
 
 def tinylidar_il_m():
     test_id = "benchmark_tiny_il_m"
-    planner = TinyLidarNet(test_id,2)
+    planner = TinyLidarNet(test_id,2,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
 
 def tinylidar_il_l():
     test_id = "benchmark_tiny_il_l"
-    planner = TinyLidarNet(test_id,1)
+    planner = TinyLidarNet(test_id,1,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_main_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -102,10 +102,10 @@ if __name__ == "__main__":
     #optimisation_and_tracking()
     #mpcc()
     #follow_the_gap()
-    #end_to_end_drl()
+    end_to_end_drl()
     #tinylidar_drl()
-    end_to_end_il()
-    tinylidar_il()
+    #end_to_end_il()
+    #tinylidar_il()
     #tinylidar_il_m()
     #tinylidar_il_l()
 
