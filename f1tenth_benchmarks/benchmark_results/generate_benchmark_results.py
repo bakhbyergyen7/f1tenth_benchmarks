@@ -2,7 +2,8 @@ from f1tenth_benchmarks.classic_racing.RaceTrackGenerator import RaceTrackGenera
 from f1tenth_benchmarks.classic_racing.GlobalPurePursuit import GlobalPurePursuit
 from f1tenth_benchmarks.classic_racing.GlobalMPCC import GlobalMPCC
 from f1tenth_benchmarks.mapless_racing.FollowTheGap import FollowTheGap
-from f1tenth_benchmarks.drl_racing.EndToEndAgent import EndToEndAgent, TrainEndToEndAgent
+from f1tenth_benchmarks.drl_racing.EndToEndAgent import EndToEndAgent, TinyAgent, TrainEndToEndAgent, TrainTinyAgent
+from f1tenth_benchmarks.zarrar.mlp_il import EndToEnd
 from f1tenth_benchmarks.zarrar.tiny_lidarnet import TinyLidarNet
 
 from f1tenth_benchmarks.data_tools.specific_plotting.plot_drl_training import plot_drl_training
@@ -46,18 +47,6 @@ def follow_the_gap():
 
 def end_to_end_drl():
     test_id = "benchmark_e2e_drl"
-    training_map = "example"
-    seed_randomness(12)
-    print(f"Training DRL agent: {test_id}")
-    training_agent = TrainEndToEndAgent(training_map, test_id, extra_params={'reward': "TAL", 'tal_racetrack_set': "mu90"}) 
-    simulate_training_steps(training_agent, training_map, test_id, extra_params={'n_sim_steps': 10})
-    plot_drl_training(training_agent.name, test_id)
-
-    testing_agent = EndToEndAgent(test_id)
-    test_mapless_all_maps(testing_agent, test_id, number_of_laps=10)
-
-def tinylidar_drl():
-    test_id = "benchmark_tiny_drl"
     training_map = "MoscowRaceway"
     seed_randomness(12)
     print(f"Training DRL agent: {test_id}")
@@ -66,24 +55,59 @@ def tinylidar_drl():
     plot_drl_training(training_agent.name, test_id)
 
     testing_agent = EndToEndAgent(test_id)
-    test_mapless_all_maps(testing_agent, test_id, number_of_laps=10)
+    test_mapless_all_maps(testing_agent, test_id, number_of_laps=NUMBER_OF_LAPS)
 
-def tinylidar():
-    test_id = "benchmark_tiny_il"
-    planner = TinyLidarNet(test_id)
+def tinylidar_drl():
+    test_id = "benchmark_tiny_drl"
+    training_map = "MoscowRaceway"
+    seed_randomness(12)
+    print(f"Training DRL agent: {test_id}")
+    training_agent = TrainTinyAgent(training_map, test_id, extra_params={'reward': "TAL", 'tal_racetrack_set': "mu90"}) 
+    simulate_training_steps(training_agent, training_map, test_id, extra_params={'n_sim_steps': 10})
+    plot_drl_training(training_agent.name, test_id)
+
+    testing_agent = TinyAgent(test_id)
+    test_mapless_all_maps(testing_agent, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+def end_to_end_il():
+    test_id = "benchmark_e2e_il"
+    planner = EndToEnd(test_id)
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
-    plot_trajectory_analysis('tinylidar', test_id)
+    plot_trajectory_analysis(planner.name, test_id)
 
+def tinylidar_il():
+    test_id = "benchmark_tiny_il"
+    planner = TinyLidarNet(test_id,4)
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
+
+def tinylidar_il_m():
+    test_id = "benchmark_tiny_il_m"
+    planner = TinyLidarNet(test_id,2)
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
+
+def tinylidar_il_l():
+    test_id = "benchmark_tiny_il_l"
+    planner = TinyLidarNet(test_id,1)
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
 
 if __name__ == "__main__":
     # generate_racelines()
     #optimisation_and_tracking()
     #mpcc()
     #follow_the_gap()
-    # end_to_end_drl()
-    # tinylidar_drl()
-    tinylidar()
+    #end_to_end_drl()
+    #tinylidar_drl()
+    end_to_end_il()
+    tinylidar_il()
+    #tinylidar_il_m()
+    #tinylidar_il_l()
 
 
 

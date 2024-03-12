@@ -2,8 +2,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from f1tenth_benchmarks.drl_racing.training_utils import DoublePolicyNet, DoubleQNet, TinyPolicyNet, TinyCriticNet, SharedCNN
-from f1tenth_benchmarks.drl_racing.training_utils import DoubleQNet, PolicyNetworkSAC, OffPolicyBuffer
+from f1tenth_benchmarks.drl_racing.training_utils import DoublePolicyNet, DoubleQNet, TinyPolicyNet, TinyCriticNet
+from f1tenth_benchmarks.drl_racing.training_utils import DoubleQNet, PolicyNetworkSAC, OffPolicyBuffer, TinyPolicyBuffer
 
 
 # hyper parameters
@@ -98,26 +98,27 @@ class TrainTD3:
 
 class TrainTinyTD3:
     def __init__(self, state_dim, action_dim):
+        self.state_dim = state_dim
         self.act_dim = action_dim
         
-        shared_cnn = SharedCNN()
-        self.actor = TinyPolicyNet(shared_cnn, state_dim, action_dim)
-        self.actor_target = TinyPolicyNet(shared_cnn, state_dim, action_dim)
+        self.actor = TinyPolicyNet(271, action_dim)
+        self.actor_target = TinyPolicyNet(271, action_dim)
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-3)
 
-        self.critic_1 = TinyCriticNet(shared_cnn, state_dim, action_dim)
-        self.critic_target_1 = TinyCriticNet(shared_cnn, state_dim, action_dim)
+        self.critic_1 = TinyCriticNet(state_dim, action_dim)
+        self.critic_target_1 = TinyCriticNet(state_dim, action_dim)
         self.critic_target_1.load_state_dict(self.critic_1.state_dict())
-        self.critic_2 = TinyCriticNet(shared_cnn, state_dim, action_dim)
-        self.critic_target_2 = TinyCriticNet(shared_cnn, state_dim, action_dim)
+        self.critic_2 = TinyCriticNet(state_dim, action_dim)
+        self.critic_target_2 = TinyCriticNet(state_dim, action_dim)
         self.critic_target_2.load_state_dict(self.critic_2.state_dict())
         self.critic_optimizer = torch.optim.Adam(list(self.critic_1.parameters()) + list(self.critic_2.parameters()), lr=1e-3)
 
-        self.replay_buffer = OffPolicyBuffer(state_dim, action_dim)
+        self.replay_buffer = TinyPolicyBuffer(271, 271, action_dim)
 
     def act(self, state, noise=EXPLORE_NOISE):
-        state = torch.FloatTensor(state.reshape(1, -1))
+        # state = torch.FloatTensor(state.reshape(1, -1))
+        state = torch.FloatTensor(state.reshape(-1, 1, 271))
 
         action = self.actor(state).data.numpy().flatten()
         
@@ -130,28 +131,28 @@ class TrainTinyTD3:
         if self.replay_buffer.size() < BATCH_SIZE:
             return
         for it in range(iterations):
-            state, action, next_state, reward, done = self.replay_buffer.sample(BATCH_SIZE)
-            self.update_critic(state, action, next_state, reward, done)
+            actor_state, critic_state, action, next_actor_state, next_critic_state, reward, done = self.replay_buffer.sample(BATCH_SIZE)
+            self.update_critic(actor_state, critic_state, action, next_actor_state, next_critic_state, reward, done)
         
             if it % POLICY_FREQUENCY == 0:
-                self.update_policy(state)
+                self.update_policy(actor_state, critic_state)
                 
                 soft_update(self.critic_1, self.critic_target_1, tau)
                 soft_update(self.critic_2, self.critic_target_2, tau)
                 soft_update(self.actor, self.actor_target, tau)
     
-    def update_critic(self, state, action, next_state, reward, done):
+    def update_critic(self, actor_state, critic_state, action, next_actor_state, next_critic_state, reward, done):
         noise = torch.normal(torch.zeros(action.size()), POLICY_NOISE)
         noise = noise.clamp(-NOISE_CLIP, NOISE_CLIP)
-        next_action = (self.actor_target(next_state) + noise).clamp(-1, 1)
+        next_action = (self.actor_target(actor_state) + noise).clamp(-1, 1)
 
-        target_Q1 = self.critic_target_1(next_state, next_action)
-        target_Q2 = self.critic_target_2(next_state, next_action)
+        target_Q1 = self.critic_target_1(next_critic_state, next_action)
+        target_Q2 = self.critic_target_2(next_critic_state, next_action)
         target_Q = torch.min(target_Q1, target_Q2)
         target_Q = reward + (done * GAMMA * target_Q).detach()
 
-        current_Q1 = self.critic_1(state, action)
-        current_Q2 = self.critic_2(state, action)
+        current_Q1 = self.critic_1(critic_state, action)
+        current_Q2 = self.critic_2(critic_state, action)
 
         critic_loss = F.mse_loss(current_Q1, target_Q) + F.mse_loss(current_Q2, target_Q) 
 
@@ -159,8 +160,8 @@ class TrainTinyTD3:
         critic_loss.backward()
         self.critic_optimizer.step()
 
-    def update_policy(self, state):
-        actor_loss = -self.critic_1(state, self.actor(state)).mean()
+    def update_policy(self, actor_state, critic_state,):
+        actor_loss = -self.critic_1(critic_state, self.actor(actor_state)).mean()
 
         self.actor_optimizer.zero_grad()
         actor_loss.backward()

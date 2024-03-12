@@ -4,12 +4,11 @@ from numba import njit
 from f1tenth_benchmarks.utils.BasePlanner import BasePlanner
 import tensorflow as tf
 
-class TinyLidarNet(BasePlanner):
-    def __init__(self, test_id, skip_n):
-        super().__init__("TinyLidarNet", test_id)
-        self.skip_n = skip_n
-        self.name = 'TinyLidarNet'
-        self.interpreter = tf.lite.Interpreter(model_path='/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_smaller_noquantized.tflite')
+class EndToEnd(BasePlanner):
+    def __init__(self, test_id):
+        super().__init__("EndToEnd", test_id)
+        self.name = 'EndToEnd'
+        self.interpreter = tf.lite.Interpreter(model_path='/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_paper_noquantized.tflite')
         self.interpreter.allocate_tensors()
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.output_details = self.interpreter.get_output_details()
@@ -25,7 +24,7 @@ class TinyLidarNet(BasePlanner):
         noise = np.random.normal(0, 0.5, scans.shape)
         scans = scans + noise
         scans[scans>10] = 10
-        scans = scans[::self.skip_n]
+        #scans = scans[::4]
         scans = np.expand_dims(scans, axis=-1).astype(np.float32)
         scans = np.expand_dims(scans, axis=0)
         self.interpreter.set_tensor(self.input_index, scans)
@@ -39,7 +38,7 @@ class TinyLidarNet(BasePlanner):
 
         steer = output[0,0]
         speed = output[0,1]
-        speed = self.linear_map(speed, 0, 1, 3, 8)
+        speed = self.linear_map(speed, 0, 1, 1, 6)
         action = np.array([steer, speed])
 
         return action

@@ -37,7 +37,7 @@ def simulate_training_steps(planner, train_map, test_id, extra_params={}):
 
 
 map_list = ["example", "MoscowRaceway"]
-# map_list = ["aut", "esp", "gbr"]
+#map_list = ["aut", "esp", "gbr", 'mco']
 
 def test_planning_all_maps(planner, test_id, extra_params={}, number_of_laps=NUMBER_OF_LAPS):
     # map_list = ["esp", "gbr", "mco"]

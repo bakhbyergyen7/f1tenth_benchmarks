@@ -8,7 +8,7 @@ training_steps: 50000
 max_speed: 8
 number_of_beams: 271
 range_finder_scale: 10
-n_scans: 1
+#n_scans: 2
 
 reward: 'TAL'
 # reward: 'CTH'
