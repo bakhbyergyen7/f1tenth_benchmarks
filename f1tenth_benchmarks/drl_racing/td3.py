@@ -8,7 +8,7 @@ from f1tenth_benchmarks.drl_racing.training_utils import DoubleQNet, PolicyNetwo
 
 # hyper parameters
 BATCH_SIZE = 100
-GAMMA = 0.99
+GAMMA = 0.98
 tau = 0.005
 # NOISE = 0.2
 NOISE_CLIP = 0.5
@@ -37,7 +37,7 @@ class TrainTD3:
         self.critic_2 = DoubleQNet(state_dim, action_dim)
         self.critic_target_2 = DoubleQNet(state_dim, action_dim)
         self.critic_target_2.load_state_dict(self.critic_2.state_dict())
-        self.critic_optimizer = torch.optim.Adam(list(self.critic_1.parameters()) + list(self.critic_2.parameters()), lr=1e-3)
+        self.critic_optimizer = torch.optim.Adam(list(self.critic_1.parameters()) + list(self.critic_2.parameters()), lr=4e-4)
 
         self.replay_buffer = OffPolicyBuffer(state_dim, action_dim)
 
@@ -113,11 +113,12 @@ class TrainTinyTD3:
         self.critic_target_2.load_state_dict(self.critic_2.state_dict())
         self.critic_optimizer = torch.optim.Adam(list(self.critic_1.parameters()) + list(self.critic_2.parameters()), lr=1e-3)
 
-        self.replay_buffer = OffPolicyBuffer(state_dim, action_dim)
+        self.replay_buffer = TinyPolicyBuffer(state_dim, action_dim)
 
     def act(self, state, noise=EXPLORE_NOISE):
-        state = torch.FloatTensor(state.reshape(1, -1))
-
+        # state = torch.FloatTensor(state.reshape(1, -1))
+        state = torch.FloatTensor(state)
+        # print(state.shape)
         action = self.actor(state).data.numpy().flatten()
         
         if noise != 0: 

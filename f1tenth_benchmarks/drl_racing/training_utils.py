@@ -199,14 +199,19 @@ class TinyPolicyNet(nn.Module):
     def __init__(self, state_dim, act_dim):
         super(TinyPolicyNet, self).__init__()
         
-        self.fc1 = nn.Linear(state_dim, NN_LAYER_1)
-        self.fc2 = nn.Linear(NN_LAYER_1, NN_LAYER_2)
-        self.fc_mu = nn.Linear(NN_LAYER_2, act_dim)
+        self.conv1 = nn.Conv1d(2, 16, 4, 2)
+        self.conv2 = nn.Conv1d(16, 32, 2, 1)
+        self.fc1 = nn.Linear(256, 64)
+        self.fc_mu = nn.Linear(64, act_dim)
 
     def forward(self, x):
-        #print(x.shape)
+        # print(x.shape)
+        if (x.dim() == 2):
+            x = x.unsqueeze(0)
+        x = F.relu(self.conv1(x))
+        x = F.relu(self.conv2(x))
+        x = torch.flatten(x, 1)
         x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
         mu = torch.tanh(self.fc_mu(x)) 
         return mu
     
@@ -220,16 +225,19 @@ class TinyCriticNet(nn.Module):
     def __init__(self, state_dim, act_dim):
         super(TinyCriticNet, self).__init__()
         
-        self.fc1 = nn.Linear(state_dim + act_dim, NN_LAYER_1)
-        self.fc2 = nn.Linear(NN_LAYER_1, NN_LAYER_2)
-        self.fc_out = nn.Linear(NN_LAYER_2, 1)
+        self.conv1 = nn.Conv1d(2, 16, 4, 2)
+        self.conv2 = nn.Conv1d(16, 32, 2, 1)
+        self.fc1 = nn.Linear(256 + act_dim, 64)
+        self.fc_mu = nn.Linear(64, act_dim)
 
     def forward(self, state, action):
-        #print(state.shape, action.shape)
+        # print(state.shape, action.shape)
+        state = F.relu(self.conv1(state))
+        state = F.relu(self.conv2(state))
+        state = torch.flatten(state, 1)
         x = torch.cat([state, action], 1)
         x2 = F.relu(self.fc1(x))
-        x3 = F.relu(self.fc2(x2))
-        q = self.fc_out(x3)
+        q = self.fc_mu(x2)
         return q
         
 

@@ -36,7 +36,8 @@ def simulate_training_steps(planner, train_map, test_id, extra_params={}):
             observation, done, init_pose = sim.reset()
 
 
-map_list = ["example", "MoscowRaceway"]
+map_list = ["example", "MoscowRaceway", "Austin", "YasMarina", "Spielberg", "Oschersleben"]
+# map_list = ["Austin"]
 #map_list = ["aut", "esp", "gbr", 'mco']
 
 def test_planning_all_maps(planner, test_id, extra_params={}, number_of_laps=NUMBER_OF_LAPS):

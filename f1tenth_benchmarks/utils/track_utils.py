@@ -72,6 +72,21 @@ class TrackLine:
 
         return point
 
+    def is_vehicle_reversed(self):
+        pose = self.calculate_pose()
+        position, orientation = pose
+        # Assuming self.track is a 2D numpy array where each row is a point on the track
+        distances = np.linalg.norm(self.track - position, axis=1)
+        closest_point_index = np.argmin(distances)
+        next_point_index = (closest_point_index + 1) % len(self.track)
+        prev_point_index = (closest_point_index - 1) % len(self.track)
+ 
+        track_direction = self.track[next_point_index] - self.track[prev_point_index]
+        vehicle_direction = np.array([np.cos(orientation), np.sin(orientation)])
+ 
+        angle = np.arccos(np.dot(vehicle_direction, track_direction) / (np.linalg.norm(vehicle_direction) * np.linalg.norm(track_direction)))
+        return np.degrees(angle) > 90
+
     def calculate_pose(self, s):
         point = np.array(splev(s, self.tck, ext=3)).T
         dx, dy = splev(s, self.tck, der=1, ext=3)
