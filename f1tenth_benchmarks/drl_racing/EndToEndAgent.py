@@ -177,9 +177,10 @@ class TinyAgent(BasePlanner):
             self.scan_buffer[0, :] = scan
 
         dual_scan = np.reshape(self.scan_buffer, (-1))
-        nn_obs = np.concatenate((dual_scan, [speed]))
+        # speed = np.reshape(speed, (1,1))
+        # nn_obs = np.concatenate((self.scan_buffer, speed))
 
-        return nn_obs
+        return dual_scan
 
     def transform_action(self, nn_action):
         steering_angle = nn_action[0] * self.vehicle_params.max_steer
@@ -202,7 +203,7 @@ class TrainTinyAgent(TinyAgent):
         self.action = None
 
         self.skip_n = int(np.ceil(1081 / self.planner_params.number_of_beams))
-        self.state_space = (1, self.planner_params.number_of_beams *2 + 1)
+        self.state_space = self.planner_params.number_of_beams*self.planner_params.n_scans
         self.scan_buffer = np.zeros((self.planner_params.n_scans, self.planner_params.number_of_beams))
 
         self.agent = create_train_agent(self.state_space, self.planner_params.algorithm)

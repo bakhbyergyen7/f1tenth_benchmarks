@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from f1tenth_benchmarks.drl_racing.training_utils import DoublePolicyNet, DoubleQNet, TinyPolicyNet, TinyCriticNet, SharedCNN
+from f1tenth_benchmarks.drl_racing.training_utils import DoublePolicyNet, DoubleQNet, TinyPolicyNet, TinyCriticNet
 from f1tenth_benchmarks.drl_racing.training_utils import DoubleQNet, PolicyNetworkSAC, OffPolicyBuffer, TinyPolicyBuffer
 
 
@@ -100,24 +100,23 @@ class TrainTinyTD3:
     def __init__(self, state_dim, action_dim):
         self.act_dim = action_dim
         
-        shared_cnn = SharedCNN()
-        self.actor = TinyPolicyNet(shared_cnn, state_dim, action_dim)
-        self.actor_target = TinyPolicyNet(shared_cnn, state_dim, action_dim)
+        self.actor = TinyPolicyNet(state_dim, action_dim)
+        self.actor_target = TinyPolicyNet(state_dim, action_dim)
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.actor_optimizer = torch.optim.Adam(self.actor.parameters(), lr=1e-3)
 
-        self.critic_1 = TinyCriticNet(shared_cnn, state_dim, action_dim)
-        self.critic_target_1 = TinyCriticNet(shared_cnn, state_dim, action_dim)
+        self.critic_1 = TinyCriticNet(state_dim, action_dim)
+        self.critic_target_1 = TinyCriticNet(state_dim, action_dim)
         self.critic_target_1.load_state_dict(self.critic_1.state_dict())
-        self.critic_2 = TinyCriticNet(shared_cnn, state_dim, action_dim)
-        self.critic_target_2 = TinyCriticNet(shared_cnn, state_dim, action_dim)
+        self.critic_2 = TinyCriticNet(state_dim, action_dim)
+        self.critic_target_2 = TinyCriticNet(state_dim, action_dim)
         self.critic_target_2.load_state_dict(self.critic_2.state_dict())
         self.critic_optimizer = torch.optim.Adam(list(self.critic_1.parameters()) + list(self.critic_2.parameters()), lr=1e-3)
 
-        self.replay_buffer = TinyPolicyBuffer(state_dim, action_dim)
+        self.replay_buffer = OffPolicyBuffer(state_dim, action_dim)
 
     def act(self, state, noise=EXPLORE_NOISE):
-        state = torch.FloatTensor(state)
+        state = torch.FloatTensor(state.reshape(1, -1))
 
         action = self.actor(state).data.numpy().flatten()
         
@@ -169,7 +168,6 @@ class TrainTinyTD3:
 
     def save(self, filename, directory):
         torch.save(self.actor, directory + f'{filename}_actor.pth')
-
 
 class TestTD3:
     def __init__(self, filename, directory):
