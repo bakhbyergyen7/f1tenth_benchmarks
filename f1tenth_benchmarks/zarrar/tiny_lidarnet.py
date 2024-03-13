@@ -25,6 +25,9 @@ class TinyLidarNet(BasePlanner):
         scans = obs['scan']
         noise = np.random.normal(0, 0.5, scans.shape)
         scans = scans + noise
+        # chunks = [scans[i:i+4] for i in range(0, len(scans), 4)]
+        # scans = [np.max(chunk) for chunk in chunks]
+        # scans = np.array(scans)
         scans[scans>10] = 10
         scans = scans[::self.skip_n]
         scans = np.expand_dims(scans, axis=-1).astype(np.float32)
@@ -40,7 +43,7 @@ class TinyLidarNet(BasePlanner):
 
         steer = output[0,0]
         speed = output[0,1]
-        speed = self.linear_map(speed, 0, 1, 3, 8)
+        speed = self.linear_map(speed, 0, 1, 2., 8)
         action = np.array([steer, speed])
 
         return action
