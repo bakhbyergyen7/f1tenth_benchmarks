@@ -50,11 +50,16 @@ class TinyLidarNet(BasePlanner):
 
         steer = output[0,0]
         speed = output[0,1]
-        # speed = self.linear_map(speed, 0, 1, 2.5, 8) #for all
+        min_speed = 4
+        max_speed = 8
+        #alpha = 0
+        #new_max_speed = max_speed + alpha
+        speed = self.linear_map(speed, 0, 1, min_speed, max_speed) #for all
+        #speed = self.linear_map(speed, 0, 1, 2.5, 8) #for all
         # speed = self.linear_map(speed, 0, 1, 3, 8) #for moscow
         # speed = self.linear_map(speed, 0, 1, 1.0, 8) # max
         # speed = self.linear_map(speed, 0, 1, 1.0, 8) # mean
-        speed = self.linear_map(speed, 0, 1, 1, 8) #for min
+        # speed = self.linear_map(speed, 0, 1, 1, 8) #for min
         action = np.array([steer, speed])
 
         return action

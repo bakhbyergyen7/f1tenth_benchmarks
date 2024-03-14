@@ -25,7 +25,8 @@ class EndToEndAgent(BasePlanner):
         self.range_finder_scale = 10
 
         self.skip_n = int(np.ceil(1081 / self.planner_params.number_of_beams))
-        self.state_space = self.planner_params.number_of_beams *2 + 1 
+        # self.state_space = self.planner_params.number_of_beams *2 + 1
+        self.state_space = self.planner_params.number_of_beams *2
         self.scan_buffer = np.zeros((self.planner_params.n_scans, self.planner_params.number_of_beams))
         self.actor = torch.load(self.data_root_path + f'{self.name}_actor.pth')
         
@@ -61,13 +62,16 @@ class EndToEndAgent(BasePlanner):
             self.scan_buffer[0, :] = scan
 
         dual_scan = np.reshape(self.scan_buffer, (-1))
-        nn_obs = np.concatenate((dual_scan, [speed]))
+        # nn_obs = np.concatenate((dual_scan, [speed]))
 
-        return nn_obs
+        return dual_scan
 
     def transform_action(self, nn_action):
         steering_angle = nn_action[0] * self.vehicle_params.max_steer
-        speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 0.5) + 1
+        #speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 0.5) + 1
+        #speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 1) + 2
+        # speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 1.5) + 3
+        speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 2) + 4
         speed = min(speed, self.planner_params.max_speed) # cap the speed for the planner
 
         action = np.array([steering_angle, speed])
@@ -87,6 +91,7 @@ class TrainEndToEndAgent(EndToEndAgent):
 
         self.skip_n = int(np.ceil(1081 / self.planner_params.number_of_beams))
         self.state_space = self.planner_params.number_of_beams *2 + 1 
+        self.state_space = self.planner_params.number_of_beams *2
         self.scan_buffer = np.zeros((self.planner_params.n_scans, self.planner_params.number_of_beams))
 
         self.agent = create_train_agent(self.state_space, self.planner_params.algorithm)
@@ -180,10 +185,13 @@ class TinyAgent(BasePlanner):
         # speed = np.reshape(speed, (1,1))
         # nn_obs = np.concatenate((self.scan_buffer, speed))
         return self.scan_buffer
-
+    def linear_map(self, x, x_min, x_max, y_min, y_max):
+        return (x - x_min) / (x_max - x_min) * (y_max - y_min) + y_min
     def transform_action(self, nn_action):
         steering_angle = nn_action[0] * self.vehicle_params.max_steer
         speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 0.5) + 1
+
+        # speed = self.linear_map(nn_action[1], 0, 1, 1, 8)
         speed = min(speed, self.planner_params.max_speed) # cap the speed for the planner
 
         action = np.array([steering_angle, speed])
@@ -241,7 +249,7 @@ class TrainTinyAgent(TinyAgent):
         nn_s_prime = self.transform_obs(s_prime)
         reward = self.reward_generator(s_prime, self.state, self.action)
         self.agent.replay_buffer.add(self.nn_state, self.nn_act, nn_s_prime, reward, True)
-        
+        print(self.current_ep_reward+reward)
         self.reward_history.append(self.current_ep_reward+reward)
         self.current_ep_reward = 0
         self.nn_state = None

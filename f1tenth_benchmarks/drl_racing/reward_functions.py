@@ -32,10 +32,13 @@ class TrajectoryAidedLearningReward:
 
         if observation['lap_complete']:
             return 1  # complete
+        if observation['timeout']:
+            return -1 # timeout
         if observation['collision']:
             return -1 # crash
         
         pp_act = self.pp.plan(prev_obs)
+        # weighted_difference = np.sqrt((pp_act - action)**2) / self.weights
         weighted_difference = np.abs(pp_act - action) / self.weights 
         reward = self.beta_c * max(1 - np.sum(weighted_difference), 0)
 
@@ -99,5 +102,4 @@ def robust_angle_difference_rad(x, y):
     """Returns the difference between two angles in RADIANS
     r = x - y"""
     return np.arctan2(np.sin(x-y), np.cos(x-y))
-
 

@@ -44,8 +44,10 @@ class F1TenthSimBase:
         # state is [x, y, steer_angle, vel, yaw_angle, yaw_rate, slip_angle]
         self.current_state = np.zeros((7, ))
         self.current_time = 0.0
-        self.lap_progress, self.centre_line_progress = 0, 0 
+        self.lap_progress, self.centre_line_progress = 0, 0
+        self.halfway_crossed = False
         self.lap_number = -1 # so that it goes to 0 when reset
+        self.progresses = []
         self.starting_progress = 0
         self.total_steps = 0
 
@@ -94,10 +96,11 @@ class F1TenthSimBase:
         pose = np.append(self.current_state[0:2], self.current_state[4])
         self.collision = self.check_vehicle_collision(pose)
         self.lap_complete = self.check_lap_complete(pose)
+        self.timeout = self.check_timeout()
         observation = self.build_observation(pose)
         self.total_steps += 1
         
-        done = self.collision or self.lap_complete
+        done = self.collision or self.lap_complete or self.timeout
         if done:
             self.lap_history.append({"Lap": self.lap_number, "TestMap": self.map_name, "TestID": self.test_id, "Progress": self.lap_progress, "Time": self.current_time, "Steps": self.total_steps, "RecordTime": datetime.datetime.now(), "Planner": self.planner_name, "EntryID": f"{self.map_name}_{self.test_id}_{self.lap_number}", "Collision": self.collision, "LapComplete": self.lap_complete, "StartingProgress": self.starting_progress})
             self.save_data_frame()
@@ -107,7 +110,8 @@ class F1TenthSimBase:
             print(f"{self.lap_number} :: {self.total_steps} COLLISION: Time: {self.current_time:.2f}, Progress: {100*self.lap_progress:.1f}")
         elif self.lap_complete:
             print(f"{self.lap_number} :: {self.total_steps} LAP COMPLETE: Time: {self.current_time:.2f}, Progress: {(100*self.lap_progress):.1f}")
-
+        elif self.timeout:
+            print(f"{self.lap_number} :: {self.total_steps} TIMEOUT: Time: {self.current_time:.2f}, Progress: {(100*self.lap_progress):.1f}")
 
         return observation, done
 
@@ -124,13 +128,20 @@ class F1TenthSimBase:
         if self.lap_progress > 0.999: self.lap_progress = 0
         
         done = False
-        if self.lap_progress > 0.995 and self.current_time > 5: done = True
-        if self.current_time > 250: 
+        self.progresses.append(self.lap_progress)
+        if self.lap_progress > 0.4 or self.lap_progress < 0.6:
+            self.halfway_crossed = True
+        if self.lap_progress > 0.995 and self.current_time > 5 and self.halfway_crossed: 
+            done = True
+        return done
+    def check_timeout(self):
+        if self.current_time > 100: 
             print("Time limit reached --> Lap not complete but no collision")
             done = True
-
-        return done
-        
+        else:
+            done = False
+        return done    
+    
     def check_vehicle_collision(self, pose):
         rotation_mtx = np.array([[np.cos(pose[2]), -np.sin(pose[2])], [np.sin(pose[2]), np.cos(pose[2])]])
 
@@ -206,6 +217,7 @@ class F1TenthSim(F1TenthSimBase):
                 "vehicle_speed": self.dynamics_simulator.state[3],
                 "collision": self.collision,
                 "lap_complete": self.lap_complete,
+                "timeout": self.timeout,
                 "laptime": self.current_time}
         return observation
 
@@ -223,6 +235,7 @@ class F1TenthSim_TrueLocation(F1TenthSimBase):
                 "vehicle_speed": self.dynamics_simulator.state[3],
                 "collision": self.collision,
                 "lap_complete": self.lap_complete,
+                "timeout": self.timeout,
                 "laptime": self.current_time,
                 "progress": self.lap_progress,
                 "centre_line_progress": self.centre_line_progress}

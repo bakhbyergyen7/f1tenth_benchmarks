@@ -146,8 +146,8 @@ def generate_racelines():
     params.mu = 0.9
     # raceline_id = f"_drl_training"
     raceline_id = f"mu{int(params.mu*100)}"
-    #map_list = ['MoscowRaceway', 'Austin', 'YasMarina','Spielberg', 'Oschersleben', 'example']
-    map_list = ['Spielberg']
+    map_list = ['MoscowRaceway', 'Austin', 'YasMarina','Spielberg', 'Oschersleben', 'example']
+    #map_list = ['Spielberg']
     # map_list = ['mco']
     # map_list = ['aut']
     for map_name in map_list: 
