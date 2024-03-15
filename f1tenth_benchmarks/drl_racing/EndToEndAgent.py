@@ -68,10 +68,10 @@ class EndToEndAgent(BasePlanner):
 
     def transform_action(self, nn_action):
         steering_angle = nn_action[0] * self.vehicle_params.max_steer
-        #speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 0.5) + 1
+        speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 0.5) + 1
         #speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 1) + 2
         # speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 1.5) + 3
-        speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 2) + 4
+        # speed = (nn_action[1] + 1) * (self.vehicle_params.max_speed  / 2 - 1.5) + 4
         speed = min(speed, self.planner_params.max_speed) # cap the speed for the planner
 
         action = np.array([steering_angle, speed])

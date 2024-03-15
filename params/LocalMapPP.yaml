@@ -1,8 +1,10 @@
 
+#max_speed: 8
 max_speed: 8
 mu: 0.6
 centre_lookahead_distance: 1.4
-constant_speed: 3
+#constant_speed: 3
+constant_speed: 1
 
 constant_lookahead: 0.3
 variable_lookahead: 1.6

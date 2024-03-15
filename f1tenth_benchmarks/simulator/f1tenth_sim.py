@@ -135,7 +135,7 @@ class F1TenthSimBase:
             done = True
         return done
     def check_timeout(self):
-        if self.current_time > 100: 
+        if self.current_time > 250: 
             print("Time limit reached --> Lap not complete but no collision")
             done = True
         else:
@@ -166,7 +166,7 @@ class F1TenthSimBase:
             # self.starting_progress = self.centre_line.calculate_progress_percent(start_pose)
         else:
             self.starting_progress = 0
-            start_pose = np.zeros(3)
+            start_pose = self.centre_line.calculate_pose(self.starting_progress)
 
         self.current_state = self.dynamics_simulator.reset(start_pose)
         self.current_time = 0.0
