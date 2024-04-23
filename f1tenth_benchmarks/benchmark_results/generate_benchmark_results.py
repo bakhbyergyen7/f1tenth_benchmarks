@@ -63,10 +63,10 @@ def tinylidar_drl():
     test_id = "benchmark_tiny_drl"
     training_map = "MoscowRaceway"
     seed_randomness(12)
-    print(f"Training DRL agent: {test_id}")
-    training_agent = TrainTinyAgent(training_map, test_id, extra_params={'reward': "TAL", 'tal_racetrack_set': "mu90"}) 
-    simulate_training_steps(training_agent, training_map, test_id, extra_params={'n_sim_steps': 10})
-    plot_drl_training(training_agent.name, test_id)
+    # print(f"Training DRL agent: {test_id}")
+    # training_agent = TrainTinyAgent(training_map, test_id, extra_params={'reward': "TAL", 'tal_racetrack_set': "mu90"}) 
+    # simulate_training_steps(training_agent, training_map, test_id, extra_params={'n_sim_steps': 10})
+    # plot_drl_training(training_agent.name, test_id)
 
     testing_agent = TinyAgent(test_id)
     test_mapless_all_maps(testing_agent, test_id, number_of_laps=NUMBER_OF_LAPS)
@@ -75,7 +75,28 @@ def tinylidar_drl():
 
 def end_to_end_il():
     test_id = "benchmark_e2e_il"
-    planner = EndToEnd(test_id)
+    planner = EndToEnd(test_id,4, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_S_noquantized.tflite')
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
+
+def end_to_end_il_m():
+    test_id = "benchmark_e2e_il_m"
+    planner = EndToEnd(test_id,2, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_M_noquantized.tflite')
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
+
+def end_to_end_il_l():
+    test_id = "benchmark_e2e_il_l"
+    planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_paper_noquantized.tflite')
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
+
+def end_to_end_il_128():
+    test_id = "benchmark_e2e_il_128"
+    planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_128_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -126,7 +147,7 @@ def tinylidar_il_l():
 
 def tinylidar_il_dropout():
     test_id = "benchmark_tiny_il_dropout"
-    planner = TinyLidarNet(test_id,1, 4,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/tinylidarnet_1081_conv2d.tflite')
+    planner = TinyLidarNet(test_id,1, 4,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_unifying_noquantized.tflite')
     
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
@@ -135,17 +156,20 @@ def tinylidar_il_dropout():
 if __name__ == "__main__":
     # generate_racelines()
     # # mpcc()
-    # optimisation_and_tracking()
+    optimisation_and_tracking()
     # follow_the_gap()
-    end_to_end_drl()
+    # end_to_end_drl()
     # tinylidar_drl()
-    end_to_end_il()
-    tinylidar_il()
-    tinylidar_il_m()
-    tinylidar_il_l()
-    tinylidar_il_min()
-    tinylidar_il_max()
-    tinylidar_il_mean()
+    # end_to_end_il()
+    # end_to_end_il_m()
+    # end_to_end_il_l()
+    # end_to_end_il_128()
+    # tinylidar_il()
+    # tinylidar_il_m()
+    # tinylidar_il_l()
+    # tinylidar_il_min()
+    # tinylidar_il_max()
+    # tinylidar_il_mean()
     # tinylidar_il_dropout()
 
 

@@ -37,7 +37,7 @@ def simulate_training_steps(planner, train_map, test_id, extra_params={}):
 
 
 #map_list = ["example", "MoscowRaceway", "Austin", "YasMarina", "Spielberg", "Oschersleben"]
-map_list = ["example", "MoscowRaceway", "Austin", "Spielberg"]
+map_list = ["example", "MoscowRaceway", "Austin", "Spielberg", "esp"]
 # map_list = ["example"]
 # map_list = ["aut", "esp", "gbr", 'mco']
 

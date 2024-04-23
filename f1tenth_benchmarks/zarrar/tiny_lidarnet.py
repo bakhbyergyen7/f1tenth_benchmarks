@@ -15,6 +15,7 @@ class TinyLidarNet(BasePlanner):
         self.interpreter.allocate_tensors()
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.output_details = self.interpreter.get_output_details()
+        self.scan_buffer = np.zeros((2, 20))
 
     def linear_map(self, x, x_min, x_max, y_min, y_max):
         return (x - x_min) / (x_max - x_min) * (y_max - y_min) + y_min
@@ -22,10 +23,26 @@ class TinyLidarNet(BasePlanner):
     def render_waypoints(self, *args, **kwargs):
         pass
         
+    def transform_obs(self, scan):
+        self.scan_buffer
+        scan = scan[:1080]
+        scan = scan[::54]
+        if self.scan_buffer.all() ==0: # first reading
+            for i in range(self.scan_buffer.shape[0]):
+                self.scan_buffer[i, :] = scan
+        else:
+            self.scan_buffer = np.roll(self.scan_buffer, 1, axis=0)
+            self.scan_buffer[0, :] = scan
+
+        scans = np.reshape(self.scan_buffer, (-1))
+        return scans
+
+    
     def plan(self, obs):
         scans = obs['scan']
         noise = np.random.normal(0, 0.5, scans.shape)
         scans = scans + noise
+        
         chunks = [scans[i:i+4] for i in range(0, len(scans), 4)]
         if self.pre == 1:
             scans = [np.mean(chunk) for chunk in chunks]
@@ -33,7 +50,8 @@ class TinyLidarNet(BasePlanner):
             scans = [np.max(chunk) for chunk in chunks]
         elif self.pre == 3:
             scans = [np.min(chunk) for chunk in chunks]
-        
+        elif self.pre == 4:
+            scans = self.transform_obs(scans)
         else:
             scans = scans[::self.skip_n]
 
@@ -65,10 +83,11 @@ class TinyLidarNet(BasePlanner):
             # speed = self.linear_map(speed, 0, 1, 1, 8) #for min
             action = np.array([steer, speed])
         else:
-            scans = np.array(scans)
+            scans = np.expand_dims(scans, axis=-1).astype(np.float32)
+            scans = np.expand_dims(scans, axis=0)
+
             scans[scans>10] = 10
-            # print(scans.shape)
-            scans = np.asarray(scans).reshape(-1,1,1081,1).astype(np.float32)
+            # scans = np.asarray(scans).reshape(-1,1,1081,1).astype(np.float32)
             # print(scans.shape)
             self.interpreter.set_tensor(self.input_index, scans)
             
