@@ -17,6 +17,8 @@ class TinyLidarNet(BasePlanner):
         self.output_details = self.interpreter.get_output_details()
         self.scan_buffer = np.zeros((2, 20))
 
+        self.temp_scan = []
+
     def linear_map(self, x, x_min, x_max, y_min, y_max):
         return (x - x_min) / (x_max - x_min) * (y_max - y_min) + y_min
 
@@ -40,6 +42,7 @@ class TinyLidarNet(BasePlanner):
     
     def plan(self, obs):
         scans = obs['scan']
+
         noise = np.random.normal(0, 0.5, scans.shape)
         scans = scans + noise
         
@@ -58,11 +61,21 @@ class TinyLidarNet(BasePlanner):
         if self.pre < 4:
             scans = np.array(scans)
             scans[scans>10] = 10
+            # input_shape = self.interpreter.get_input_details()[0]['shape']
+            # print("Input shape:", input_shape)
+            # print("Shape of scans:", scans.shape)
+            # print("Shape of self.temp_scan:", [s.shape for s in self.temp_scan])
+
+            # if(len(self.temp_scan) <1):
+            #     self.temp_scan.append(scans)
+            #     return np.array([0,2])
+            # self.temp_scan.append(scans)
+            # scans = self.temp_scan
+
             scans = np.expand_dims(scans, axis=-1).astype(np.float32)
             scans = np.expand_dims(scans, axis=0)
             self.interpreter.set_tensor(self.input_index, scans)
             
-
             start_time = time.time()
             self.interpreter.invoke()
             inf_time = time.time() - start_time
@@ -70,7 +83,9 @@ class TinyLidarNet(BasePlanner):
             output = self.interpreter.get_tensor(self.output_details[0]['index'])
 
             steer = output[0,0]
+            # steer = -0.35 if steer < -0.35 else 0.35 if steer > 0.35 else steer
             speed = output[0,1]
+            # self.temp_scan = self.temp_scan[1:]
             min_speed = 1
             max_speed = 8
             #alpha = 0
