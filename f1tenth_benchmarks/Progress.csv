@@ -1,8 +1,6 @@
 TestID,AUSTIN,MOSCOWRACEWAY,SPIELBERG,EXAMPLE
 benchmark_e2e_il_l,15.615000000000002,33.484,57.628,47.741
 benchmark_tiny_il,100.0,100.0,100.0,100.0
-benchmark_tiny_il_l,100.0,100.0,100.0,100.0
+benchmark_tiny_il_l,100.0,85.53,100.0,93.41100000000002
 benchmark_tiny_il_m,100.0,100.0,100.0,100.0
-benchmark_tiny_il_max,96.503,100.0,50.964999999999996,100.0
-benchmark_tiny_il_mean,69.414,100.0,100.0,100.0
-benchmark_tiny_il_min,100.0,100.0,100.0,100.0
+benchmark_tiny_il_temporal,100.0,100.0,100.0,100.0

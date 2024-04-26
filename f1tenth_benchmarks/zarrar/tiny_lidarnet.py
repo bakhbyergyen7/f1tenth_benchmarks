@@ -61,16 +61,6 @@ class TinyLidarNet(BasePlanner):
         if self.pre < 4:
             scans = np.array(scans)
             scans[scans>10] = 10
-            # input_shape = self.interpreter.get_input_details()[0]['shape']
-            # print("Input shape:", input_shape)
-            # print("Shape of scans:", scans.shape)
-            # print("Shape of self.temp_scan:", [s.shape for s in self.temp_scan])
-
-            # if(len(self.temp_scan) <1):
-            #     self.temp_scan.append(scans)
-            #     return np.array([0,2])
-            # self.temp_scan.append(scans)
-            # scans = self.temp_scan
 
             scans = np.expand_dims(scans, axis=-1).astype(np.float32)
             scans = np.expand_dims(scans, axis=0)
@@ -83,20 +73,44 @@ class TinyLidarNet(BasePlanner):
             output = self.interpreter.get_tensor(self.output_details[0]['index'])
 
             steer = output[0,0]
-            # steer = -0.35 if steer < -0.35 else 0.35 if steer > 0.35 else steer
             speed = output[0,1]
-            # self.temp_scan = self.temp_scan[1:]
             min_speed = 1
             max_speed = 8
-            #alpha = 0
-            #new_max_speed = max_speed + alpha
-            speed = self.linear_map(speed, 0, 1, min_speed, max_speed) #for all
-            #speed = self.linear_map(speed, 0, 1, 2.5, 8) #for all
-            # speed = self.linear_map(speed, 0, 1, 3, 8) #for moscow
-            # speed = self.linear_map(speed, 0, 1, 1.0, 8) # max
-            # speed = self.linear_map(speed, 0, 1, 1.0, 8) # mean
-            # speed = self.linear_map(speed, 0, 1, 1, 8) #for min
+            speed = self.linear_map(speed, 0, 1, min_speed, max_speed) 
             action = np.array([steer, speed])
+
+        elif self.pre == 5:
+            scans = np.array(scans)
+            scans[scans>10] = 10
+            input_shape = self.interpreter.get_input_details()[0]['shape']
+            # print("Input shape:", input_shape)
+            # print("Shape of scans:", scans.shape)
+            # print("Shape of self.temp_scan:", [s.shape for s in self.temp_scan])
+
+            if(len(self.temp_scan) <1):
+                self.temp_scan.append(scans)
+                return np.array([0,2])
+            self.temp_scan.append(scans)
+            scans = self.temp_scan
+
+            scans = np.expand_dims(scans, axis=-1).astype(np.float32)
+            scans = np.expand_dims(scans, axis=0)
+            self.interpreter.set_tensor(self.input_index, scans)
+            
+            start_time = time.time()
+            self.interpreter.invoke()
+            inf_time = time.time() - start_time
+            inf_time = inf_time*1000
+            output = self.interpreter.get_tensor(self.output_details[0]['index'])
+
+            steer = output[0,0]
+            speed = output[0,1]
+            self.temp_scan = self.temp_scan[1:]
+            min_speed = 1
+            max_speed = 8
+            speed = self.linear_map(speed, 0, 1, min_speed, max_speed) 
+            action = np.array([steer, speed])
+
         else:
             scans = np.expand_dims(scans, axis=-1).astype(np.float32)
             scans = np.expand_dims(scans, axis=0)

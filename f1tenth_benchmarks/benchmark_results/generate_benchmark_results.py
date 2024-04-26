@@ -122,6 +122,12 @@ def tinylidar_il_min():
 
     plot_trajectory_analysis(planner.name, test_id)
 
+def tinylidar_il_temporal():
+    test_id = "benchmark_tiny_il_temporal"
+    planner = TinyLidarNet(test_id, 2, 5,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_temporal_M_noquantized.tflite')
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
 
 def tinylidar_il():
     test_id = "benchmark_tiny_il"
@@ -139,11 +145,12 @@ def tinylidar_il_m():
 
 def tinylidar_il_l():
     test_id = "benchmark_tiny_il_l"
-    planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_main_noquantized.tflite')
-    
+    planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_L_Dag_noquantized.tflite')
+    #planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_main_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
+
 
 def tinylidar_il_dropout():
     test_id = "benchmark_tiny_il_dropout"
@@ -162,11 +169,12 @@ if __name__ == "__main__":
     # tinylidar_drl()
     # end_to_end_il()
     # end_to_end_il_m()
-    end_to_end_il_l()
+    # end_to_end_il_l()
     # end_to_end_il_128()
-    tinylidar_il()
-    tinylidar_il_m()
-    tinylidar_il_l()
+    # tinylidar_il()
+    # tinylidar_il_m()
+    # tinylidar_il_l()
+    tinylidar_il_temporal()
     # tinylidar_il_min()
     # tinylidar_il_max()
     # tinylidar_il_mean()

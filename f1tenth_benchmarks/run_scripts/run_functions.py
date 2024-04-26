@@ -7,7 +7,7 @@ from pyglet.gl import GL_POINTS
 NUMBER_OF_LAPS = 1
 
 def simulate_laps(sim, planner, n_laps):
-    #n_laps = 3 # for collecting data
+    #n_laps = 2 # for collecting data
     lidar_dataset = []  # Initialize an empty list to store the lidar scans
     steering_angles = []  # Initialize an empty list to store the steering angles
     speeds = []  # Initialize an empty list to store the speeds
@@ -19,9 +19,10 @@ def simulate_laps(sim, planner, n_laps):
             action = planner.plan(observation)
             observation, done = sim.step(action)
             lidar_scan = observation['scan']  # Extract the lidar scan from the observation
+            # Preprocessing
             noise = np.random.normal(0, 0.5, lidar_scan.shape)
             lidar_scan = lidar_scan + noise
-            lidar_scan[lidar_scan>10] = 10
+            lidar_scan[lidar_scan>20] = 20
             lidar_dataset.append(lidar_scan)  # Append the lidar scan to the dataset
             steering_angle = action[0]  # Extract the steering angle from the action
             speed = action[1]  # Extract the speed from the action
@@ -54,6 +55,7 @@ def simulate_training_steps(planner, train_map, test_id, extra_params={}):
 
 #map_list = ["example", "MoscowRaceway", "Austin", "YasMarina", "Spielberg", "Oschersleben"]
 map_list = ["example", "MoscowRaceway", "Austin", "Spielberg"]#, "esp"]
+#map_list = ["example", "MoscowRaceway"]
 # map_list = ["example"]
 # map_list = ["aut", "esp", "gbr", 'mco']
 
