@@ -124,7 +124,17 @@ def tinylidar_il_min():
 
 def tinylidar_il_temporal():
     test_id = "benchmark_tiny_il_temporal"
-    planner = TinyLidarNet(test_id, 2, 5,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_temporal_M_noquantized.tflite')
+    #planner = TinyLidarNet(test_id, 2, 5,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_temporal_M_noquantized.tflite')
+    planner = TinyLidarNet(test_id, 2, 5,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_temporal_2M_noquantized.tflite')
+    
+    test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
+
+    plot_trajectory_analysis(planner.name, test_id)
+
+def tinylidar_il_birdeye():
+    test_id = "benchmark_tiny_il_birdeye"
+    planner = TinyLidarNet(test_id, 2, 6,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_birdeye_M_noquantized.tflite')
+    
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -138,7 +148,8 @@ def tinylidar_il():
 
 def tinylidar_il_m():
     test_id = "benchmark_tiny_il_m"
-    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
+    #planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
+    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_M_Dag_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -172,9 +183,10 @@ if __name__ == "__main__":
     # end_to_end_il_l()
     # end_to_end_il_128()
     # tinylidar_il()
-    # tinylidar_il_m()
+    tinylidar_il_m()
     # tinylidar_il_l()
-    tinylidar_il_temporal()
+    # tinylidar_il_temporal()
+    # tinylidar_il_birdeye()
     # tinylidar_il_min()
     # tinylidar_il_max()
     # tinylidar_il_mean()

@@ -80,6 +80,7 @@ class TinyLidarNet(BasePlanner):
             action = np.array([steer, speed])
 
         elif self.pre == 5:
+            # Temporal
             scans = np.array(scans)
             scans[scans>10] = 10
             input_shape = self.interpreter.get_input_details()[0]['shape']
@@ -91,10 +92,14 @@ class TinyLidarNet(BasePlanner):
                 self.temp_scan.append(scans)
                 return np.array([0,2])
             self.temp_scan.append(scans)
-            scans = self.temp_scan
-
-            scans = np.expand_dims(scans, axis=-1).astype(np.float32)
-            scans = np.expand_dims(scans, axis=0)
+            scans = np.array(self.temp_scan)
+            # print("Shape of scans:", scans.shape)
+            scans = np.expand_dims(scans, axis=0).astype(np.float32)
+            # print("Shape of scans:", scans.shape)
+            scans = np.transpose(scans, (0, 2, 1))
+            # print("Shape of scans:", scans.shape)
+            # scans = np.expand_dims(scans, axis=-1).astype(np.float32)
+            # scans = np.expand_dims(scans, axis=0)
             self.interpreter.set_tensor(self.input_index, scans)
             
             start_time = time.time()
@@ -110,6 +115,41 @@ class TinyLidarNet(BasePlanner):
             max_speed = 8
             speed = self.linear_map(speed, 0, 1, min_speed, max_speed) 
             action = np.array([steer, speed])
+
+        elif self.pre == 6:
+            # birdeye
+            scans = np.array(scans)
+            scans[scans>10] = 10
+            input_shape = self.interpreter.get_input_details()[0]['shape']
+            # print("Input shape:", input_shape)
+            # print("Shape of scans:", scans.shape)
+            # print("Shape of self.temp_scan:", [s.shape for s in self.temp_scan])
+
+            if(len(self.temp_scan) <1):
+                self.temp_scan.append(scans)
+                return np.array([0,2])
+            self.temp_scan.append(scans)
+            scans = np.array(self.temp_scan)
+            # print("Shape of scans:", scans.shape)
+            scans = np.expand_dims(scans, axis=-1).astype(np.float32)
+            scans = np.expand_dims(scans, axis=0).astype(np.float32)
+            # print("Shape of scans:", scans.shape)
+            self.interpreter.set_tensor(self.input_index, scans)
+            
+            start_time = time.time()
+            self.interpreter.invoke()
+            inf_time = time.time() - start_time
+            inf_time = inf_time*1000
+            output = self.interpreter.get_tensor(self.output_details[0]['index'])
+
+            steer = output[0,0]
+            speed = output[0,1]
+            self.temp_scan = self.temp_scan[1:]
+            min_speed = 1
+            max_speed = 10
+            speed = self.linear_map(speed, 0, 1, min_speed, max_speed) 
+            action = np.array([steer, speed])
+
 
         else:
             scans = np.expand_dims(scans, axis=-1).astype(np.float32)
@@ -130,7 +170,7 @@ class TinyLidarNet(BasePlanner):
             steer = output[0,0]
             speed = output[0,1]
             min_speed = 1
-            max_speed = 5
+            max_speed = 8
             speed = self.linear_map(speed, 0, 1, min_speed, max_speed)
             action = np.array([steer, speed])
 
