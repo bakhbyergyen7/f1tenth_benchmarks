@@ -89,6 +89,7 @@ def end_to_end_il_m():
 
 def end_to_end_il_l():
     test_id = "benchmark_e2e_il_l"
+    # planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_L_Dropout_noquantized.tflite')
     planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_paper_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
@@ -124,6 +125,8 @@ def tinylidar_il_min():
 
 def tinylidar_il_temporal():
     test_id = "benchmark_tiny_il_temporal"
+
+    print(test_id)
     #planner = TinyLidarNet(test_id, 2, 5,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_temporal_M_noquantized.tflite')
     planner = TinyLidarNet(test_id, 2, 5,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_temporal_2M_noquantized.tflite')
     
@@ -133,6 +136,7 @@ def tinylidar_il_temporal():
 
 def tinylidar_il_birdeye():
     test_id = "benchmark_tiny_il_birdeye"
+    print(test_id)
     planner = TinyLidarNet(test_id, 2, 6,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_birdeye_M_noquantized.tflite')
     
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
@@ -141,6 +145,7 @@ def tinylidar_il_birdeye():
 
 def tinylidar_il():
     test_id = "benchmark_tiny_il"
+    print(test_id)
     planner = TinyLidarNet(test_id,4, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_smaller_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
@@ -148,16 +153,20 @@ def tinylidar_il():
 
 def tinylidar_il_m():
     test_id = "benchmark_tiny_il_m"
-    #planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
-    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_M_Dag_noquantized.tflite')
+    print(test_id)
+    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
+    # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_M_Dag_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
 
 def tinylidar_il_l():
     test_id = "benchmark_tiny_il_l"
-    planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_L_Dag_noquantized.tflite')
-    #planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_main_noquantized.tflite')
+    print(test_id)
+    
+    # planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_L_Dropout_noquantized.tflite')
+    # planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_L_Dag_noquantized.tflite')
+    planner = TinyLidarNet(test_id,1, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_main_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -165,6 +174,7 @@ def tinylidar_il_l():
 
 def tinylidar_il_dropout():
     test_id = "benchmark_tiny_il_dropout"
+    print(test_id)
     planner = TinyLidarNet(test_id,1, 4,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_unifying_noquantized.tflite')
     
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
@@ -178,13 +188,13 @@ if __name__ == "__main__":
     # follow_the_gap()
     # end_to_end_drl()
     # tinylidar_drl()
-    # end_to_end_il()
-    # end_to_end_il_m()
-    # end_to_end_il_l()
+    end_to_end_il()
+    end_to_end_il_m()
+    end_to_end_il_l()
     # end_to_end_il_128()
-    # tinylidar_il()
+    tinylidar_il()
     tinylidar_il_m()
-    # tinylidar_il_l()
+    tinylidar_il_l()
     # tinylidar_il_temporal()
     # tinylidar_il_birdeye()
     # tinylidar_il_min()

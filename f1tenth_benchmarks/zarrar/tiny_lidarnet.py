@@ -125,7 +125,7 @@ class TinyLidarNet(BasePlanner):
             # print("Shape of scans:", scans.shape)
             # print("Shape of self.temp_scan:", [s.shape for s in self.temp_scan])
 
-            if(len(self.temp_scan) <1):
+            if(len(self.temp_scan) <3):
                 self.temp_scan.append(scans)
                 return np.array([0,2])
             self.temp_scan.append(scans)
@@ -146,7 +146,7 @@ class TinyLidarNet(BasePlanner):
             speed = output[0,1]
             self.temp_scan = self.temp_scan[1:]
             min_speed = 1
-            max_speed = 10
+            max_speed = 8
             speed = self.linear_map(speed, 0, 1, min_speed, max_speed) 
             action = np.array([steer, speed])
 
