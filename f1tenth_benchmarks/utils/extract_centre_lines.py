@@ -140,8 +140,5 @@ def interpolate_track(points, n_points=None, s=0):
 
 
 if __name__ == '__main__':
-    extract_centre_line('aut')
-    extract_centre_line('esp')
-    extract_centre_line('gbr')
-    extract_centre_line('mco')
+    extract_centre_line('example')
 
