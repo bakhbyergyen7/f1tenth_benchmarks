@@ -61,6 +61,8 @@ class F1TenthSimBase:
         self.pr = cProfile.Profile()
         self.pr.enable()
 
+        self.pose_i = 0
+
     def __del__(self):
         try:
             self.pr.disable()
@@ -159,6 +161,17 @@ class F1TenthSimBase:
     
 
     def reset(self):
+        # if self.params.use_random_starts and self.lap_number > -1:
+        #     self.starting_progress = self.random_start_rng.random()
+        #     start_pose = self.centre_line.calculate_pose(self.starting_progress)
+        #     # start_pose = self.centre_line.calculate_pose(self.start_pose_rands[self.lap_number])
+        #     # self.starting_progress = self.centre_line.calculate_progress_percent(start_pose)
+        # else:
+        # start_poses = np.arange(0, 100, 10)
+        # # self.starting_progress = 0
+        # self.starting_progress = start_poses[self.pose_i] / 100.0
+        # self.pose_i  = (self.pose_i + 1) % len(start_poses)
+        # start_pose = self.centre_line.calculate_pose(self.starting_progress)
         if self.params.use_random_starts and self.lap_number > -1:
             self.starting_progress = self.random_start_rng.random()
             start_pose = self.centre_line.calculate_pose(self.starting_progress)
