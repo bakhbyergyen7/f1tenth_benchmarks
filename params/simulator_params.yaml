@@ -11,8 +11,8 @@ num_beams: 1081
 vehicle_width: 0.31
 vehicle_length: 0.58
 
-# use_random_starts: True
-use_random_starts: False
+use_random_starts: True
+# use_random_starts: False
 save_scan_history: False
 
 
