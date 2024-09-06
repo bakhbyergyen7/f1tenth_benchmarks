@@ -82,16 +82,16 @@ def end_to_end_il():
 
 def end_to_end_il_m():
     test_id = "benchmark_e2e_il_m"
-    # planner = EndToEnd(test_id,2, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_M_noquantized.tflite')
-    planner = EndToEnd(test_id,2, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/MLP_M_Dropout_noquantized.tflite')
+    planner = EndToEnd(test_id,2, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_M_noquantized.tflite')
+    # planner = EndToEnd(test_id,2, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/MLP_M_Dropout_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
 
 def end_to_end_il_l():
     test_id = "benchmark_e2e_il_l"
-    # planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_L_Dropout_noquantized.tflite')
     planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_paper_noquantized.tflite')
+    # planner = EndToEnd(test_id, 1, '/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_MLP_L_Dropout_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -155,9 +155,9 @@ def tinylidar_il():
 def tinylidar_il_m():
     test_id = "benchmark_tiny_il_m"
     print(test_id)
-    # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
+    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
     # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_diff_TLN_M_Dag_noquantized.tflite')
-    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/TinyLidarNet_M_Dropout_noquantized.tflite')
+    # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/TinyLidarNet_M_Dropout_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
     plot_trajectory_analysis(planner.name, test_id)
@@ -190,13 +190,13 @@ if __name__ == "__main__":
     # follow_the_gap()
     # end_to_end_drl()
     # tinylidar_drl()
-    # end_to_end_il()
-    # end_to_end_il_m()
-    # end_to_end_il_l()
+    end_to_end_il()
+    end_to_end_il_m()
+    end_to_end_il_l()
     # end_to_end_il_128()
-    # tinylidar_il()
+    tinylidar_il()
     tinylidar_il_m()
-    # tinylidar_il_l()
+    tinylidar_il_l()
     # tinylidar_il_temporal()
     # tinylidar_il_birdeye()
     # tinylidar_il_min()
