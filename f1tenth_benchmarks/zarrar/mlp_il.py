@@ -3,6 +3,8 @@ import numpy as np
 from numba import njit
 from f1tenth_benchmarks.utils.BasePlanner import BasePlanner
 import tensorflow as tf
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU
 
 class EndToEnd(BasePlanner):
     def __init__(self, test_id, skip_n, model_path):
