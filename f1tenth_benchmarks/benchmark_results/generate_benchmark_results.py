@@ -186,7 +186,7 @@ if __name__ == "__main__":
     # generate_racelines()
     # # mpcc()
     # optimisation_and_tracking()
-    # follow_the_gap()
+    follow_the_gap()
     # end_to_end_drl()
     # tinylidar_drl()
     # end_to_end_il_128()
@@ -197,12 +197,13 @@ if __name__ == "__main__":
     # tinylidar_il_max()
     # tinylidar_il_mean()
     # tinylidar_il_dropout()
-    end_to_end_il()
-    end_to_end_il_m()
-    end_to_end_il_l()
-    tinylidar_il()
-    tinylidar_il_m()
-    tinylidar_il_l()
+
+    # end_to_end_il()
+    # end_to_end_il_m()
+    # end_to_end_il_l()
+    # tinylidar_il()
+    # tinylidar_il_m()
+    # tinylidar_il_l()
 
 
 
