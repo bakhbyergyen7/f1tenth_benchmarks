@@ -7,7 +7,7 @@ class FollowTheGap(BasePlanner):
         self.name = 'FollowTheGap'
 
     def plan(self, obs):
-        car_width = .296
+        car_width = 0.31
         tolerance = 0.5
         scan = obs['scan']
 
@@ -40,14 +40,14 @@ class FollowTheGap(BasePlanner):
         
         # print(f'steering angle:{speed}')
 
-        action = np.array([steering_angle, speed])
+        action = np.array([self.deg2rad(steering_angle), speed])
 
         return action
 
 #-----------------------------------------
     
     def safe_point(self, scan):
-        car_width = .296
+        car_width = 0.31
         tolerance = 0.5
         laser_arr = scan
         goal_dist = np.max(laser_arr)
