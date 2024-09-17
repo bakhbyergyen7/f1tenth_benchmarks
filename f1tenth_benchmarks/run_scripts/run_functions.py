@@ -7,7 +7,7 @@ from pyglet.gl import GL_POINTS
 NUMBER_OF_LAPS = 1
 
 def simulate_laps(sim, planner, n_laps):
-    n_laps = 10 # for collecting data
+    n_laps = NUMBER_OF_LAPS # for collecting data
     lidar_dataset = []  # Initialize an empty list to store the lidar scans
     steering_angles = []  # Initialize an empty list to store the steering angles
     speeds = []  # Initialize an empty list to store the speeds
@@ -55,7 +55,7 @@ def simulate_training_steps(planner, train_map, test_id, extra_params={}):
 
 #map_list = ["example", "MoscowRaceway", "Austin", "YasMarina", "Spielberg", "Oschersleben"]
 map_list = ["example", "MoscowRaceway", "Austin", "Spielberg"]#, "esp"]
-
+map_list = ["Spielberg"]
 # map_list = ["example", "MoscowRaceway"]
 # map_list = ["example"]
 # map_list = ["aut", "esp", "gbr", 'mco']
@@ -141,7 +141,6 @@ def test_mapless_single_map(planner, map_name, test_id, extra_params={}, number_
     print(f"Testing on {map_name}...")
     simulator = F1TenthSim(map_name, planner.name, test_id, extra_params=extra_params)
     lidar_data, steering_angles, speeds = simulate_laps(simulator, planner, number_of_laps)
-    
     # Convert the lists to numpy arrays
     lidar_data_np = np.array(lidar_data)
     steering_angles_np = np.array(steering_angles)
