@@ -60,7 +60,7 @@ class TinyLidarNet(BasePlanner):
 
         if self.pre < 4:
             scans = np.array(scans)
-            scans[scans>20] = 20
+            scans[scans>5] = 5
 
             scans = np.expand_dims(scans, axis=-1).astype(np.float32)
             scans = np.expand_dims(scans, axis=0)
