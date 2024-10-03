@@ -41,8 +41,8 @@ class EndToEnd(BasePlanner):
 
         steer = output[0,0]
         speed = output[0,1]
-        min_speed = 1
-        max_speed = 8
+        min_speed = 0
+        max_speed = 10
         speed = self.linear_map(speed, 0, 1, min_speed, max_speed)
         # speed = self.linear_map(speed, 0, 1, 2.5, 8) #for all
         action = np.array([steer, speed])
