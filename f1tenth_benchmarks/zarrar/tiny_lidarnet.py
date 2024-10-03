@@ -60,7 +60,12 @@ class TinyLidarNet(BasePlanner):
 
         if self.pre < 4:
             scans = np.array(scans)
-            scans[scans>5] = 5
+            scans[scans>=15] = 15
+            # scans[scans>=20] = 30
+            # scans = np.array(scans)  # Ensure scans is a numpy array
+
+            # # Use np.logical_and for element-wise comparison
+            # scans[np.logical_and(scans >= 10, scans <= 20)] = 10
 
             scans = np.expand_dims(scans, axis=-1).astype(np.float32)
             scans = np.expand_dims(scans, axis=0)
@@ -76,6 +81,7 @@ class TinyLidarNet(BasePlanner):
             speed = output[0,1]
             min_speed = 1
             max_speed = 8
+
             speed = self.linear_map(speed, 0, 1, min_speed, max_speed) 
             action = np.array([steer, speed])
 
