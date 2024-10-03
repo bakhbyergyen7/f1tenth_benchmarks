@@ -156,8 +156,8 @@ def tinylidar_il():
 def tinylidar_il_m():
     test_id = "benchmark_tiny_il_m"
     print(test_id)
-    # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
-    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/TinyLidarNet_M_Dropout_noquantized.tflite')
+    planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/f1_tenth_model_small_noquantized.tflite')
+    # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/TinyLidarNet_M_Dropout_noquantized.tflite')
     # planner = TinyLidarNet(test_id,2, 0,'/home/m810z573/Downloads/f1tenth_benchmarks/f1tenth_benchmarks/zarrar/TLN_noquantized.tflite')
     test_mapless_all_maps(planner, test_id, number_of_laps=NUMBER_OF_LAPS)
 
